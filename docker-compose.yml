@@ -1,0 +1,34 @@
+services:
+
+  snort:
+    build: ./snort
+    container_name: snort_ids
+    volumes:
+      - ./snort:/etc/snort
+      - snort_logs:/var/log/snort
+
+
+  bloom:
+    build: ./bloom
+    container_name: bloom_filter
+    ports:
+      - "5000:5000"
+
+  ml:
+    build: ./ml
+    container_name: ml_service
+    ports:
+      - "6000:6000"
+
+  bridge:
+    build: ./bridge
+    container_name: bridge_service
+    depends_on:
+      - snort
+      - bloom
+      - ml
+    volumes:
+      - snort_logs:/var/log/snort
+
+volumes:
+  snort_logs:
